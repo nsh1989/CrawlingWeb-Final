@@ -1,0 +1,1 @@
+export const GET_BRAND_STATE = "GET_BRAND_STATE"

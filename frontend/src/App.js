@@ -1,17 +1,15 @@
-import logo from './logo.svg';
 import './App.css';
-import {Component} from "react";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import EncarList from "./components/EncarList";
-import Main from "./Main";
 import FilterbarComponent from "./components/FilterbarComponent";
+
+import store from './redux/stores/Store'
 import {Provider} from "react-redux";
-import {createStore} from "redux";
-import reducer from "./redux/modules/encarCategory";
-import {connect} from "react-redux";
+
 
 function App() {
   return (
+      <Provider store={store}>
           <div className="App">
               <FilterbarComponent/>
               <Router>
@@ -21,12 +19,14 @@ function App() {
                   </Routes>
               </Router>
           </div>
+      </Provider>
   );
 }
-const mapStateToProps = (state) =>{
-    return{
-        brand: state.data.brand,
-    }
-}
-
-export default connect(mapStateToProps, null)(App);
+export default App;
+// const mapStateToProps = (state) =>{
+//     return{
+//         brand: state.data.brand,
+//     }
+// }
+//
+// export default connect(mapStateToProps, null)(App);

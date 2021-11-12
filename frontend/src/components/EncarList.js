@@ -1,12 +1,17 @@
 import React, {Component, useState, useEffect} from "react";
+import {connect} from "react-redux";
 import service from "../services/service";
+import CategoryReducer from "../redux/reducers/CategoryReducer";
 // import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
 // import AppNavbar from './AppNavbar';
 
 class EncarList extends Component{
     constructor(props) {
         super(props);
-        this.state = {boards : []}
+        this.state = {
+            boards : [],
+            selectedBrand : null,
+        }
         // this.remove = this.remove.bind(this);
     }
     componentDidMount() {
@@ -18,6 +23,8 @@ class EncarList extends Component{
     }
     render() {
         console.log("data: " , this.state.boards)
+        const { storeSelected } = this.props;
+        console.log("Encarlist render : ", storeSelected);
         return(
           <div className="container">
               <table className="table table-bordered">
@@ -65,4 +72,10 @@ class EncarList extends Component{
     }
 }
 
-export default EncarList
+const mapStateToProps = state => ({
+    storeSelected : state.CategoryReducer.selectedBrand
+})
+const mapDispatchToProps = (dispatch) => ({
+})
+export default connect(mapStateToProps, mapDispatchToProps)(EncarList);
+// export default EncarList
