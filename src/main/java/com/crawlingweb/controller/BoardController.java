@@ -38,7 +38,6 @@ public class BoardController {
     @GetMapping
     @CrossOrigin(origins="*", allowedHeaders = "*")
     public ResponseEntity getlist(Pageable pageable) {
-//        PageRequest request = PageRequest.of(pageNum - 1 , pageSize);
         System.out.println(pageable);
         Page<Encarlist> Contents = encarlistRepository.findAll(pageable);
         return new ResponseEntity<>(Contents, HttpStatus.OK);
