@@ -31,7 +31,7 @@ class App extends Component {
                     <FilterbarComponent/>
                     <Routes>
                         <Route path="/" element={<Container/>}/>
-                        <Route path="/api" element={<EncarList/>}/>
+                        <Route path="/board" element={<EncarList/>}/>
                     </Routes>
                 </Layout>
             </Router>
