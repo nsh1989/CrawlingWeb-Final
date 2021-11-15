@@ -8,77 +8,77 @@ import java.time.LocalDate;
 @Entity
 public class Encarlist {
     @Id
-    @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @Column(name = "MANUFACTURER")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String manufacturer;
 
-    @Column(name = "MODEL")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String model;
 
-    @Column(name = "BADGE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String badge;
 
-    @Column(name = "BADGEDETAIL")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String badgedetail;
 
-    @Column(name = "FUELTYPE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String fueltype;
 
-    @Column(name = "TRANSMISSION")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String transmission;
 
-    @Column(name = "FORMYEAR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String formyear;
 
-    @Column(name = "MILEAGE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigDecimal mileage;
 
-    @Column(name = "PRICE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigDecimal price;
 
-    @Column(name = "UPDATEDDATE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private LocalDate updateddate;
 
-    @Column(name = "VIN")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String vin;
 
-    @Column(name = "ACCIDENT")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String accident;
 
-    @Column(name = "REPAIR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String repair;
 
-    @Column(name = "SOLDDATE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private LocalDate solddate;
 
-    @Column(name = "AGE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer age;
 
-    @Column(name = "MODIFIEDDATE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private LocalDate modifieddate;
 
     @Lob
-    @Column(name = "RAWDATA")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String rawdata;
 
-    @Column(name = "CHECKDETAIL")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Boolean checkdetail;
 
-    @Column(name = "BSOLD")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Boolean bsold;
 
-    @Column(name = "BAVAILABLE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Boolean bavailable;
 
-    @Column(name = "ECODE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String ecode;
 
-    @Column(name = "FIRSTREG")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String firstreg;
 
-    @Column(name = "SOLDDAYS")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private LocalDate solddays;
 
     public LocalDate getSolddays() {

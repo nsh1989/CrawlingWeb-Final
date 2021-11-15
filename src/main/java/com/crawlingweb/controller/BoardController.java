@@ -3,13 +3,19 @@ package com.crawlingweb.controller;
 import com.crawlingweb.entity.Encarlist;
 import com.crawlingweb.entity.ResultReturn;
 import com.crawlingweb.repository.EncarlistRepository;
+import com.crawlingweb.repository.EncarlistSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.lang.System;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -90,60 +96,44 @@ public class BoardController {
                                        @RequestParam(value="brand", required = false) String brand,
                                        @RequestParam(value="model", required = false) String model,
                                        @RequestParam(value="year", required = false) String year,
-                                       @RequestParam(value="age", required = false, defaultValue = "") String age,
-                                       @RequestParam(value="km", required = false, defaultValue = "") String km,
+                                       @RequestParam(value="age", required = false, defaultValue = "0") int age,
+                                       @RequestParam(value="km", required = false, defaultValue = "0") BigDecimal km,
                                        @RequestParam(value="ecode", required = false) String ecode,
-                                       @RequestParam(value="kmParam", required = false, defaultValue = "") String kmParam,
-                                       @RequestParam(value="ageParam", required = false, defaultValue = "") String ageParam,
-                                       @RequestParam(value="pageIndex", required = false, defaultValue = "1") String pageIndex
+                                       @RequestParam(value="kmParam", required = false, defaultValue = "0") BigDecimal kmParam,
+                                       @RequestParam(value="ageParam", required = false, defaultValue = "0") int ageParam,
+                                       @RequestParam(value="pageIndex", required = false, defaultValue = "1") int pageIndex
                                        ) {
-        Pageable pageable = new Pageable() {
-            @Override
-            public int getPageNumber() {
-                return 0;
-            }
 
-            @Override
-            public int getPageSize() {
-                return 0;
+        Specification<Encarlist> spec = Specification.where(EncarlistSpecification.all(null));
+        if(age != 0 && ageParam != 0){
+            spec = spec.and(EncarlistSpecification.betweenAge(age-ageParam, age+ageParam));
+        }
+        if(!km.equals(new BigDecimal(0)) && !kmParam.equals(new BigDecimal(0))){
+            BigDecimal StartKm = km.subtract(kmParam);
+            BigDecimal EndKm = km.add(kmParam);
+            spec = spec.and(EncarlistSpecification.betweenMileage(StartKm, EndKm));
+        }
+        if(ecode != null){
+            spec = spec.and(EncarlistSpecification.equalEcode(ecode));
+        }
+        else {
+            if (brand != null) {
+                spec = spec.and(EncarlistSpecification.equalBrand(brand));
             }
-
-            @Override
-            public long getOffset() {
-                return 0;
+            if (model != null) {
+                spec = spec.and(EncarlistSpecification.equalModel(model));
             }
-
-            @Override
-            public Sort getSort() {
-                return null;
+            if (sumbModel != null) {
+                spec = spec.and(EncarlistSpecification.equalbadge(sumbModel));
             }
-
-            @Override
-            public Pageable next() {
-                return null;
+            if (detailModel != null) {
+                spec = spec.and(EncarlistSpecification.equalbadgedetail(detailModel));
             }
-
-            @Override
-            public Pageable previousOrFirst() {
-                return null;
+            if (year != null) {
+                spec = spec.and(EncarlistSpecification.equalformyear(year));
             }
-
-            @Override
-            public Pageable first() {
-                return null;
-            }
-
-            @Override
-            public Pageable withPage(int pageNumber) {
-                return null;
-            }
-
-            @Override
-            public boolean hasPrevious() {
-                return false;
-            }
-        };
-        Page<Encarlist> Contents = encarlistRepository.findAll(pageable);
+        }
+        List<Encarlist> Contents = encarlistRepository.findAll(spec);
 //        BigDecimal paramKM = new BigDecimal(0);
 //        BigDecimal paramAge = new BigDecimal(0);
 //        BigDecimal KM = new BigDecimal(0);

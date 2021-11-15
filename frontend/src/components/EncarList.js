@@ -5,7 +5,6 @@ import {
     getAgeParams,
     getEcodeParams,
     getKMParams,
-    getURLParams,
     setPageIndex
 } from "../redux/reducers/encarBoardReducer";
 import Stack from "@mui/material/Stack"
@@ -45,7 +44,7 @@ class EncarList extends Component{
         this.getURLPayload();
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if(this.props.selectedBrand !== prevState.selectedBrand){
+        if(this.props.selectedBrand !== prevProps.selectedBrand){
             service.getByFilters(this.props.selectedBrand,
                 this.props.selectedModel,
                 this.props.selectedSubModel,
