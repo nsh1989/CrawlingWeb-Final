@@ -1,7 +1,22 @@
 import React, {Component, useState, useEffect} from "react";
 import service from "../services/service";
-import {FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@material-ui/core";
+import {AppBar, FormControl, InputLabel, MenuItem, OutlinedInput, Select, withStyles} from "@material-ui/core";
 import {connect} from "react-redux";
+import {
+    selectBrand,
+    selectDetailModel,
+    selectModel,
+    selectSubModel, selectYear, setPageIndex
+} from "../redux/reducers/encarBoardReducer";
+
+const styles = {
+    selectbox: {
+        padding: 1,
+        width: "20%",
+        borderRadius: 3,
+    },
+};
+
 
 class FilterbarComponent extends Component{
 
@@ -23,7 +38,14 @@ class FilterbarComponent extends Component{
             selectedOption: null,
             modeloptions : [],
             selectedModelOption: null,
+            submodeloptions : [],
+            selectedSubModelOption: null,
+            detailmodeloptions : [],
+            selecteddetailModelOption: null,
+            yearmodeloptions : [],
+            selectedyearModelOption: null,
         }
+
     }
     componentDidMount() {
         console.log("FilterbarComponent componentDidmount fired");
@@ -37,53 +59,127 @@ class FilterbarComponent extends Component{
             if(this.state.selectedOption === "All" || this.state.selectedOption === "") {
                 return;
             }
-            console.log("componentdidupdate");
-            console.log(this.state.selectedOption);
-            console.log(prevProps.selectedOption);
             service.getModels(this.state.selectedOption).then((res)=>{
                 this.setState({modeloptions: res.data})
             }).then(()=>{
-                console.log(this.state.modeloptions);
+                this.props.setSelectBrand(this.state.selectedOption)
             });
+            this.props.setPageIndex(1);
         }
+        if(this.state.selectedModelOption !== prevState.selectedModelOption){
+            if(this.state.selectedModelOption === "All" || this.state.selectedModelOption === "") {
+                return;
+            }
+            console.log("componentDidUpdate selectedModel :");
+            service.getSubModels(this.state.selectedModelOption).then((res)=>{
+                this.setState({submodeloptions: res.data})
+                console.log(res.data)
 
+            }).then(()=>{
+                this.props.setSelectModel(this.state.selectedModelOption)
+            });
+            this.props.setPageIndex(1);
+        }
+        if(this.state.selectedSubModelOption !== prevState.selectedSubModelOption){
+            if(this.state.selectedSubModelOption === "All" || this.state.selectedSubModelOption === "") {
+                return;
+            }
+            console.log("componentDidUpdate selectedSubModelOption :" , this.state.selectedSubModelOption);
+            service.getDetailModels(this.state.selectedSubModelOption).then((res)=>{
+                console.log(res.data.length)
+                if(res.data.length <= 1){
+                    service.getYearModels(this.state.selectedSubModelOption, null)
+                        .then((res)=>{
+                        this.setState({yearmodeloptions: res.data})}
+                )}else{
+                    this.setState({detailmodeloptions: res.data})
+                    console.log(res.data)
+                }
+            }).then(()=>{
+                this.props.setSelectSubModel(this.state.selectedSubModelOption)
+            });
+            this.props.setPageIndex(1);
+        }
+        if(this.state.selecteddetailModelOption !== prevState.selecteddetailModelOption){
+            if(this.state.selecteddetailModelOption === "All" || this.state.selecteddetailModelOption === "") {
+                return;
+            }
+            console.log("componentDidUpdate selectedSubModelOption :");
+            service.getYearModels(this.state.selectedSubModelOption, this.state.selecteddetailModelOption)
+            .then((res)=>{
+                this.setState({yearmodeloptions: res.data})}
+            ).then(()=>{
+                this.props.setSelectDetailModel(this.state.selecteddetailModelOption)
+            });
+            this.props.setPageIndex(1);
+        }
+        if(this.state.selectedyearModelOption !== prevState.selectedyearModelOption){
+            if(this.state.selectedyearModelOption === "All" || this.state.selectedyearModelOption === "") {
+                return;
+            }
+            console.log("componentDidUpdate selectedyearModelOption :");
+            this.props.setSelectYear(this.state.selectedyearModelOption)
+            this.props.setPageIndex(1);
+        }
     }
     //Brand Select
     handleChange = (event) => {
         this.setState( {selectedOption : event.target.value});
-        console.log(this.state.selectedOption)
-        // this.state.selectedOption=event.target.value;
-        // console.log(this.state.selectedOption)
-        this.setState({modeloptions: []});
-        this.setState({selectedModelOption: null});
-
-        // if(this.state.selectedOption !== null){
-        //     console.log("test!!")
-        //     service.getModels(this.state.selectedOption).then((res)=>{
-        //         this.setState({modeloptions: res.data})
-        //     }).then(()=>{
-        //         console.log(this.state.modeloptions);
-        //     });
-        // }
-
+        this.setState({
+            modeloptions: [],
+            selectedModelOption: null,
+            submodeloptions : [],
+            selectedSubModelOption: null,
+            detailmodeloptions : [],
+            selecteddetailModelOption: null,
+            yearmodeloptions : [],
+            selectedyearModelOption: null,
+        })
     };
-
     //model Select
     modelhandleChange = (event) => {
         this.setState({selectedModelOption: event.target.value});
-        console.log(this.state.selectedModelOption)
-        // this.setState({modeloptions: []});
+        console.log("modelhandleChange " ,this.state.selectedModelOption)
+        this.setState({
+            submodeloptions : [],
+            selectedSubModelOption: null,
+            detailmodeloptions : [],
+            selecteddetailModelOption: null,
+            yearmodeloptions : [],
+            selectedyearModelOption: null,
+        })
+    };
+    //submodel select
+    submodelhandleChange = (event) => {
+        this.setState({selectedSubModelOption: event.target.value});
+        console.log(this.state.selectedSubModelOption)
+        this.setState({
+            detailmodeloptions : [],
+            selecteddetailModelOption: null,
+            yearmodeloptions : [],
+            selectedyearModelOption: null,
+        })
+    };
+    //detail select
+    detailmodelhandleChange = (event) => {
+        this.setState({selecteddetailModelOption: event.target.value});
+        console.log(this.state.selecteddetailModelOption)
+        this.setState({
+            yearmodeloptions : [],
+            selectedyearModelOption: null,
+        })
+    };
+    //detail select
+    yearhandleChange = (event) => {
+        this.setState({selectedyearModelOption: event.target.value});
+        console.log(this.state.selectedyearModelOption)
     };
 
     render() {
-        console.log("FilterbarComponent render: ", this.state.brandoptions);
-        const {localState} = this.state;
-        const {storeBrand} =this.props;
-        console.log("localState ", {localState});
-        console.log("this.props ", {storeBrand});
+        const {classes} = this.props;
         return(
-            <div>
-                <FormControl sx={{m:1, minWidth: 50, mt:3}} className="w-25 h-25">
+            <div style={{margin:20}}>
+                <FormControl sx={{width: 1/4}} className={classes.selectbox}>
                     <InputLabel id="brand-select-label">브랜드</InputLabel>
                     <Select
                         labelId="brand-select-label"
@@ -92,16 +188,16 @@ class FilterbarComponent extends Component{
                         MenuProps={this.MenuProps}
                         input={<OutlinedInput />}
                     >
-                        <MenuItem value=""></MenuItem>
                         <MenuItem value="All">전체</MenuItem>
                         {this.state.brandoptions.map( (option, index) => (
                             <MenuItem value={option}>{option}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl sx={{m:1, minWidth: 50, mt:3}} className="w-25 h-25">
+                {/*ModelSelect*/}
+                <FormControl sx={{m:1, minWidth: 50, mt:3}} className={classes.selectbox}>
                     {/*////model*/}
-                    <InputLabel id="brand-select-label">모델</InputLabel>
+                    <InputLabel id="model-select-label">모델</InputLabel>
                     <Select
                         labelId="model-select-label"
                         id="model-select" value={this.state.selectedModelOption}
@@ -109,9 +205,56 @@ class FilterbarComponent extends Component{
                         MenuProps={this.MenuProps}
                         input={<OutlinedInput />}
                     >
-                        <MenuItem value=""></MenuItem>
-                        <MenuItem value="All">전체</MenuItem>
                         {this.state.modeloptions.map( (option, index) => (
+                            <MenuItem value={option}>{option}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                {/*SubModelSelect*/}
+                <FormControl sx={{m:1, minWidth: 50, mt:3}} className={classes.selectbox}>
+                    {/*////model*/}
+                    <InputLabel id="submodel-select-label">서브모델</InputLabel>
+                    <Select
+                        labelId="submodel-select-label"
+                        id="submodel-select" value={this.state.selectedSubModelOption}
+                        onChange={this.submodelhandleChange}
+                        MenuProps={this.MenuProps}
+                        input={<OutlinedInput />}
+                    >
+                        {this.state.submodeloptions.map( (option, index) => (
+                            <MenuItem value={option}>{option}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                {/*detailModelSelection*/}
+                <FormControl sx={{m:1, minWidth: 50, mt:3}} className={classes.selectbox}>
+                    {/*////model*/}
+                    <InputLabel id="detailmodel-select-label">세부모델</InputLabel>
+                    <Select
+                        labelId="detailmodel-select-label"
+                        id="detailmodel-select" value={this.state.selecteddetailModelOption}
+                        onChange={this.detailmodelhandleChange}
+                        MenuProps={this.MenuProps}
+                        input={<OutlinedInput />}
+                    >
+                        {this.state.detailmodeloptions.map( (option, index) => (
+                            <MenuItem value={option}>{option}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                {/*년식선택*/}
+                <FormControl sx={{m:1, minWidth: 50, mt:3}} className={classes.selectbox}>
+                    {/*////model*/}
+                    <InputLabel id="year-select-label">년식</InputLabel>
+                    <Select
+                        labelId="year-select-label"
+                        id="year-select" value={this.state.selectedyearModelOption}
+                        onChange={this.yearhandleChange}
+                        MenuProps={this.MenuProps}
+                        input={<OutlinedInput />}
+                    >
+                        <MenuItem value="All">전체</MenuItem>
+                        {this.state.yearmodeloptions.map( (option, index) => (
                             <MenuItem value={option}>{option}</MenuItem>
                         ))}
                     </Select>
@@ -120,6 +263,25 @@ class FilterbarComponent extends Component{
         );
     }
 }
-
-
-export default FilterbarComponent;
+const mapStateToProps = state => ({
+    ...state,
+    selectedBrand : state.encarBoardReducer.selectedBrand,
+    selectedModel : state.encarBoardReducer.selectedModel,
+    selectedSubModel : state.encarBoardReducer.selectedSubModel,
+    selectedDetailModel : state.encarBoardReducer.selectedDetailModel,
+    selectedYear : state.encarBoardReducer.selectedYear,
+    ecode : state.encarBoardReducer.Ecodeparam,
+    totalPage : state.encarBoardReducer.totalPage,
+    pageIndex : state.encarBoardReducer.pageIndex
+})
+const mapDispatchToProps = dispatch => {
+    return {
+        setSelectBrand:(value)=>dispatch(selectBrand(value)),
+        setSelectModel:(value)=>dispatch(selectModel(value)),
+        setSelectSubModel:(value)=>dispatch(selectSubModel(value)),
+        setSelectDetailModel:(value)=>dispatch(selectDetailModel(value)),
+        setSelectYear:(value)=>dispatch(selectYear(value)),
+        setPageIndex:(value)=>dispatch(setPageIndex(value))
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FilterbarComponent));

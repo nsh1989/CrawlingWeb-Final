@@ -19,5 +19,52 @@ class service {
                 manufacturer : brand
             }});
     }
+    getSubModels(model) {
+        const url = BOARD_API_BASE_URL + "/getSubModellist";
+        return axios.get(url,{
+            params:{
+                model : model
+            }
+        });
+    }
+    getDetailModels(submodel) {
+        const url = BOARD_API_BASE_URL + "/getDetailModellist";
+        return axios.get(url,{
+            params:{
+                submodel : submodel
+            }
+        });
+    }
+    getYearModels(submodel, detailmodel) {
+        const url = BOARD_API_BASE_URL + "/getYearModellist";
+        return axios.get(url,{
+            params:{
+                submodel : submodel,
+                detailmodel : detailmodel
+            }
+        });
+    }
+    getByFilters(brand, model, sumbModel,
+                 detailModel, year, age, km,
+                 kmParam, ageParam, pageIndex,
+                 ecode
+                 ) {
+        const url = BOARD_API_BASE_URL + "/getByFilters";
+        return axios.get(url,{
+            params:{
+                brand : brand,
+                model : model,
+                sumbModel : sumbModel,
+                detailModel : detailModel,
+                year : year,
+                age : age,
+                km : km,
+                kmParam : kmParam,
+                ageParam : ageParam,
+                pageIndex : pageIndex,
+                ecode : ecode
+            }
+        });
+    }
 }
 export default new service();

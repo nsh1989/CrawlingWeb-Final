@@ -1,6 +1,7 @@
 package com.crawlingweb.entity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Table(name = "encarlist")
@@ -32,10 +33,10 @@ public class Encarlist {
     private String formyear;
 
     @Column(name = "MILEAGE")
-    private String mileage;
+    private BigDecimal mileage;
 
     @Column(name = "PRICE")
-    private String price;
+    private BigDecimal price;
 
     @Column(name = "UPDATEDDATE")
     private LocalDate updateddate;
@@ -192,22 +193,6 @@ public class Encarlist {
         this.updateddate = updateddate;
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getMileage() {
-        return mileage;
-    }
-
-    public void setMileage(String mileage) {
-        this.mileage = mileage;
-    }
-
     public String getFormyear() {
         return formyear;
     }
@@ -270,5 +255,21 @@ public class Encarlist {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public BigDecimal getMileage() {
+        return mileage;
+    }
+
+    public void setMileage(BigDecimal mileage) {
+        this.mileage = mileage;
     }
 }
