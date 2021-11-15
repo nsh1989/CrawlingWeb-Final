@@ -1,13 +1,21 @@
 import {createAction, handleActions} from "redux-actions";
 import {
-    GETAGEPARAMS, GETECODEPARAMS,
+    GETAGEPARAMS,
+    GETECODEPARAMS,
     GETKMPARAMS,
-    GetTypeUrlParams,
-    GETURLPARAMS,
-    SELECTBRAND, SELECTDETAILMODEL,
+    SELECTBRAND,
+    SELECTDETAILMODEL,
     SELECTMODEL,
-    SELECTSUBMODEL, SELECTYEAR, SETPAGEINDEX,
-    setSelectBrand
+    SELECTSUBMODEL,
+    SELECTYEAR,
+    SETAGE,
+    SETAVGAGE,
+    SETAVGKM,
+    SETAVGPURCHASE,
+    SETAVGSALES,
+    SETKM,
+    SETPAGEINDEX,
+    SETTOTALPAGE,
 } from "../actions/types";
 
 export const getBrandList= () => {
@@ -20,15 +28,18 @@ const initialState = {
     selectedSubModel : null,
     selectedDetailModel : null,
     selectedYear : null,
-    KMparam : null,
-    Ageparam : null,
+    km : null,
+    age : null,
+    KMparam : 10000,
+    Ageparam : 12,
     Ecodeparam : null,
     AvgSalesPrice : null,
+    AvgPurchasePrice : null,
     AvgKm : null,
     AvgAge : null,
     totalCars : null,
     pageIndex : 1,
-    totalPage : 100,
+    totalPage : null,
 }
 
 export const getKMParams = createAction(GETKMPARAMS, value => value);
@@ -40,8 +51,44 @@ export const selectSubModel = createAction(SELECTSUBMODEL, value => value);
 export const selectDetailModel = createAction(SELECTDETAILMODEL, value => value);
 export const selectYear = createAction(SELECTYEAR, value => value);
 export const setPageIndex = createAction(SETPAGEINDEX, value => value);
+export const setTotalPage = createAction(SETTOTALPAGE, value => value);
+export const setKm = createAction(SETKM, value => value);
+export const setAvgKm = createAction(SETAVGKM, value => value);
+export const setAge = createAction(SETAGE, value => value);
+export const setAvgAge = createAction(SETAVGAGE, value => value);
+export const setAvgSales = createAction(SETAVGSALES, value => value);
+export const setAvgPurchase = createAction(SETAVGPURCHASE, value => value);
+
 
 export default handleActions({
+    SETTOTALPAGE : (state, action) => ({
+        ...state,
+        totalPage : action.payload,
+    }),
+    SETKM : (state, action) => ({
+        ...state,
+        km : action.payload,
+    }),
+    SETAVGKM : (state, action) => ({
+        ...state,
+        AvgKm : action.payload,
+    }),
+    SETAGE : (state, action) => ({
+        ...state,
+        age : action.payload,
+    }),
+    SETAVGAGE : (state, action) => ({
+        ...state,
+        AvgAge : action.payload,
+    }),
+    SETAVGSALES : (state, action) => ({
+        ...state,
+        AvgSalesPrice : action.payload,
+    }),
+    SETAVGPURCHASE : (state, action) => ({
+        ...state,
+        AvgPurchasePrice : action.payload,
+    }),
     SETPAGEINDEX : (state, action) => ({
         ...state,
         pageIndex : action.payload,
@@ -49,9 +96,7 @@ export default handleActions({
     GETKMPARAMS : (state, action) => (
         {
         ...state,
-        KMparam : action.payload,
-        // Ageparam : action.meta.age,
-        // Ecodeparam : action.meta.ecode
+        KMparam : action.payload
     }),
     GETAGEPARAMS : (state, action) => (
         {

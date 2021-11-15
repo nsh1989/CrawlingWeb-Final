@@ -4,8 +4,8 @@ import service from "../services/service";
 import {
     getAgeParams,
     getEcodeParams,
-    getKMParams,
-    setPageIndex
+    getKMParams, setAge, setAvgAge, setAvgKm, setAvgPurchase, setAvgSales, setKm,
+    setPageIndex, setTotalPage
 } from "../redux/reducers/encarBoardReducer";
 import Stack from "@mui/material/Stack"
 import Pagination from "@mui/material/Pagination";
@@ -15,36 +15,12 @@ class EncarList extends Component{
         super(props);
         this.state = {
             boards : [],
+            loadingState : false
         }
         // this.remove = this.remove.bind(this);
-    };
-    getURLPayload() {
-        const current = decodeURI(window.location.href);
-        console.log(current);
-        console.log("currentUrl : ", window.location.href);
-        const search = current.split("?")[1];
-        console.log("search : ", search);
-        const params = new URLSearchParams(search);
-        console.log("params : ", params);
-        const km = params.get('km');
-        const age = params.get('age');
-        const ecode = params.get('ecode');
-        console.log("KM : ", km);
-        console.log("currentUrl : ", window.location.href);
-        this.props.getKMParams(km);
-        this.props.getAgeParams(age);
-        this.props.getEcodeParams(ecode);
-    };
-
-    componentDidMount() {
-        service.getBoards().then( (res) =>{
-            console.log(res.data)
-            this.setState({boards: res.data.content});
-        });
-        this.getURLPayload();
-    }
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if(this.props.selectedBrand !== prevProps.selectedBrand){
+        console.log("constructor : ", this.props.kmParam)
+        if(this.state.loadingState === false){
+            this.getURLPayload();
             service.getByFilters(this.props.selectedBrand,
                 this.props.selectedModel,
                 this.props.selectedSubModel,
@@ -54,22 +30,84 @@ class EncarList extends Component{
                 this.props.km,
                 this.props.kmParam,
                 this.props.ageParam,
-                1,
+                this.props.pageIndex,
                 this.props.ecode
 
             ).then( (res) =>{
-                console.log(res.data)
-                this.setState({boards: res.data});
+                console.log(res)
+                this.setState({loadingState: true});
+                this.setAPIreturn(res.data);
+            }).then(()=>{
+                this.setState({loadingState: false});
             });
         }
-    }
-    handlePageChange = (page) =>{
-        console.log("page!!!")
-        console.log(this.props)
-        console.log(page)
-        console.log(page.target.outerText)
-        this.props.setPageIndex(Number(page.target.outerText))
     };
+    getURLPayload() {
+        const current = decodeURI(window.location.href);
+        const search = current.split("?")[1];
+        const params = new URLSearchParams(search);
+        const km = params.get('km');
+        const age = params.get('age');
+        const ecode = params.get('ecode');
+        this.props.setKm(km);
+        this.props.setAge(age);
+        this.props.getEcodeParams(ecode);
+    };
+
+    componentDidMount() {
+
+    }
+    setAPIreturn(res){
+        console.log("API CALL")
+        this.setState({boards: res.page.content});
+        this.props.setTotalPage(res.page.totalPages);
+        this.props.setAvgAge(res.avgAge);
+        this.props.setAvgKm(res.avgMileage);
+        this.props.setAvgSales(res.avgSalesPrice);
+        this.props.setAvgPurchase(res.avgPurchasePrice);
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(this.state.loadingState === true){
+            return
+        }
+        if(this.props.selectedBrand !== prevProps.selectedBrand ||
+            this.props.selectedModel !== prevProps.selectedModel ||
+            this.props.selectedSubModel !== prevProps.selectedSubModel ||
+            this.props.selectedDetailModel !== prevProps.selectedDetailModel ||
+            this.props.kmParam !== prevProps.kmParam ||
+            this.props.ageParam !== prevProps.ageParam ||
+            this.props.pageIndex !== prevProps.pageIndex ||
+            this.props.age !== prevProps.age ||
+            this.props.km !== prevProps.km
+        ) {
+            if (this.state.loadingState === false) {
+                service.getByFilters(this.props.selectedBrand,
+                    this.props.selectedModel,
+                    this.props.selectedSubModel,
+                    this.props.selectedDetailModel,
+                    this.props.selectedYear,
+                    this.props.age,
+                    this.props.km,
+                    this.props.kmParam,
+                    this.props.ageParam,
+                    this.props.pageIndex,
+                    this.props.ecode
+                ).then((res) => {
+                    console.log("didupate api call")
+                    this.setState({loadingState: true});
+                    this.setAPIreturn(res.data);
+                }).then(() => {
+                    this.setState({loadingState: false});
+                    console.log(this.props.kmParam)
+                    console.log("didupate api finish")
+                });
+            }
+        }
+    }
+
+    handlePageChange = (event, page) =>{
+        this.props.setPageIndex(page);
+    }
     render() {
         return(
           <div className="container" align={"center"}>
@@ -143,9 +181,12 @@ class EncarList extends Component{
 }
 
 const mapStateToProps = state => ({
-    ...state,
-    km : state.encarBoardReducer.KMparam,
-    age : state.encarBoardReducer.Ageparam,
+    AvgSalesPrice : state.encarBoardReducer.AvgSalesPrice,
+    AvgPurchasePrice : state.encarBoardReducer.AvgPurchasePrice,
+    AvgKm : state.encarBoardReducer.AvgKm,
+    AvgAge : state.encarBoardReducer.AvgAge,
+    km : state.encarBoardReducer.km,
+    age : state.encarBoardReducer.age,
     ecode : state.encarBoardReducer.Ecodeparam,
     selectedBrand : state.encarBoardReducer.selectedBrand,
     selectedModel : state.encarBoardReducer.selectedModel,
@@ -154,15 +195,22 @@ const mapStateToProps = state => ({
     selectedYear : state.encarBoardReducer.selectedYear,
     totalPage : state.encarBoardReducer.totalPage,
     pageIndex : state.encarBoardReducer.pageIndex,
-    kmParam : state.encarBoardReducer.kmParam,
-    ageParam : state.encarBoardReducer.ageParam
+    kmParam : state.encarBoardReducer.KMparam,
+    ageParam : state.encarBoardReducer.Ageparam
 })
 const mapDispatchToProps = dispatch => {
   return {
       getKMParams:(value)=>dispatch(getKMParams(value)),
       getAgeParams:(value)=>dispatch(getAgeParams(value)),
       getEcodeParams:(value)=>dispatch(getEcodeParams(value)),
-      setPageIndex:(value)=>dispatch(setPageIndex(value))
+      setPageIndex:(value)=>dispatch(setPageIndex(value)),
+      setTotalPage:(value)=>dispatch(setTotalPage(value)),
+      setKm:(value)=>dispatch(setKm(value)),
+      setAvgKm:(value)=>dispatch(setAvgKm(value)),
+      setAge:(value)=>dispatch(setAge(value)),
+      setAvgAge:(value)=>dispatch(setAvgAge(value)),
+      setAvgSales:(value)=>dispatch(setAvgSales(value)),
+      setAvgPurchase:(value)=>dispatch(setAvgPurchase(value))
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(EncarList);

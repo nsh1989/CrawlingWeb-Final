@@ -1,5 +1,3 @@
-import {useLocation} from "react-router-dom";
-
 ///// URL에서 조회 파라미터 추출
 export const GETKMPARAMS = "GETKMPARAMS";
 export const GETAGEPARAMS = "GETAGEPARAMS";
@@ -16,6 +14,15 @@ export const SELECTDETAILMODEL = "SELECTDETAILMODEL";
 export const SELECTYEAR = "SELECTYEAR";
 
 export const SETPAGEINDEX = "SETPAGEINDEX";
+
+export const SETTOTALPAGE = "SETTOTALPAGE";
+
+export const SETKM = "SETKM";
+export const SETAVGKM = "SETAVGKM";
+export const SETAGE = "SETAGE";
+export const SETAVGAGE = "SETAVGAGE";
+export const SETAVGSALES = "SETAVGSALES";
+export const SETAVGPURCHASE = "SETAVGPURCHASE";
 
 
 ///////////////test용

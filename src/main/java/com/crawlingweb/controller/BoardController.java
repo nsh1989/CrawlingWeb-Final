@@ -102,7 +102,6 @@ public class BoardController {
                                        @RequestParam(value="ageParam", required = false, defaultValue = "0") int ageParam,
                                        @RequestParam(value="pageIndex", required = false, defaultValue = "1") int pageIndex
                                        ) {
-
         Specification<Encarlist> spec = Specification.where(EncarlistSpecification.all(null));
         if(age != 0 && ageParam != 0){
             spec = spec.and(EncarlistSpecification.betweenAge(age-ageParam, age+ageParam));
@@ -132,121 +131,45 @@ public class BoardController {
                 spec = spec.and(EncarlistSpecification.equalformyear(year));
             }
         }
-        List<Encarlist> Contents = encarlistRepository.findAll(spec);
-//        BigDecimal paramKM = new BigDecimal(0);
-//        BigDecimal paramAge = new BigDecimal(0);
-//        BigDecimal KM = new BigDecimal(0);
-//        BigDecimal Age = new BigDecimal(0);
-//        if(kmParam.equals("")){
-//            paramKM = new BigDecimal(1000000000);
-//        }
-//        else{
-//            paramKM = new BigDecimal(kmParam);
-//        }
-//        if(ageParam.equals("")){
-//            paramAge = new BigDecimal(1000000000);
-//        }
-//        else{
-//            paramAge = new BigDecimal(ageParam);
-//        }
-//        if(km.equals("") == false){
-//            KM = new BigDecimal(km);
-//        }
-//        if(age.equals("") == false){
-//            Age = new BigDecimal(age);
-//        }
-//        BigDecimal upKM = KM.add(paramKM);
-//        BigDecimal downKM = KM.subtract( paramKM);
-//        BigDecimal upAge = Age.add(paramAge);
-//        BigDecimal downAge = Age.subtract( paramAge);
-//        //////////////////////////////////////////////////
-//
-//        Connection conn;
-//        Statement stmt;
-//        try {
-//            Class.forName("com.mysql.jdbc.Driver");
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        try{
-//            String jdbcUrl = "jdbc:mariadb://localhost:3306/crawler";
-//            String userID = "root";
-//            String passwd = "root";
-//
-//            conn = DriverManager.getConnection(jdbcUrl, userID, passwd);
-//            stmt = conn.createStatement();
-//
-//            String query = "SELECT * FROM `encarlist` where ";
-//            if(ecode != null){
-//                query = query +
-//            }
-//            ResultSet rs = stmt.executeQuery(query);
-//
-//            List<Encarlist> result = new ArrayList<>();
-//            while(rs.next()){
-//                Encarlist entity = new Encarlist();
-//                entity.setAge(rs.getInt("AGE"));
-//                result.add(entity);
-//            }
-//            System.out.println(1000);
-//
-//        } catch (SQLException e){
-//            System.out.println(e);
-//        }
-//
-//        System.out.println(10);
-//
-//        //////////////////////////////////////////////////////////////////////
-//        List<Encarlist> searchList  = encarlistRepository.getByFilters(brand, model,
-//                sumbModel, detailModel,
-//                year, upKM, upAge.toBigIntegerExact().intValueExact(), ecode,
-//                downAge.toBigIntegerExact().intValueExact(), downKM
-//                );
-//        int index = 1;
-//        if(pageIndex.equals("")){
-//            index = 1;
-//        }
-//        else{
-//            index = Integer.parseInt(pageIndex);
-//        }
-//        PageRequest pageRequest = PageRequest.of(index, 10);
-//        int total = searchList.size();
-//        int start = toIntExact(pageRequest.getOffset());
-//        int end = Math.min((start+ pageRequest.getPageSize()), total);
-//
-//        List<Encarlist> outputList = new ArrayList<>();
-//
-//        if( start<= end) {
-//            outputList = searchList.subList(start, end);
-//        }
-//
-//        ResultReturn Contents =  new ResultReturn();
-//        Page<Encarlist> page = new PageImpl<>(outputList, pageRequest, total);
-//
-//        Contents.setPage(page);
-//
-//        BigDecimal sumAge = new BigDecimal(0);
-//        BigDecimal sumKm = new BigDecimal(0);
-//        BigDecimal sumPrice = new BigDecimal(0);
-//
-//
-//        for(Encarlist entry: searchList){
-//            sumPrice.add(entry.getPrice());
-//            sumAge.add(new BigDecimal(entry.getAge()));
-//            sumKm.add(entry.getPrice());
-//        }
-//
-//        BigDecimal size = new BigDecimal(searchList.size());
-//        System.out.println(size);
-//        BigDecimal avgAge = sumAge.divide(size);
-//        Contents.setAvgAge(avgAge);
-//        BigDecimal avgKm = sumKm.divide(size);
-//        Contents.setAvgMileage(avgKm);
-//        BigDecimal avgPrice = sumPrice.divide(size);
-//        Contents.setAvgSalesPrice(avgPrice);
-//        Contents.setAvgPurchasePrice(avgPrice.multiply(new BigDecimal(0.93)));
+        List<Encarlist> encarlists = encarlistRepository.findAll(spec);
+        int index = 0;
+        if(pageIndex != 0){
+            index = pageIndex-1;
+        }
+        PageRequest pageRequest = PageRequest.of(index, 10);
+        int total = encarlists.size();
+        int start = toIntExact(pageRequest.getOffset());
+        int end = Math.min((start+ pageRequest.getPageSize()), total);
+
+        List<Encarlist> outputList = new ArrayList<>();
+        if( start<= end) {
+            outputList = encarlists.subList(start, end);
+        }
+
+        ResultReturn Contents =  new ResultReturn();
+        Page<Encarlist> page = new PageImpl<>(outputList, pageRequest, total);
+        Contents.setPage(page);
+
+        BigDecimal sumAge = new BigDecimal(0);
+        BigDecimal sumKm = new BigDecimal(0);
+        BigDecimal sumPrice = new BigDecimal(0);
 
 
+        for(Encarlist entry: encarlists){
+            sumPrice = sumPrice.add(entry.getPrice());
+            sumAge = sumAge.add(new BigDecimal(entry.getAge()));
+            sumKm = sumKm.add(entry.getPrice());
+        }
+
+        BigDecimal size = new BigDecimal(encarlists.size());
+        System.out.println(size);
+        BigDecimal avgAge = sumAge.divide(size, BigDecimal.ROUND_UP);
+        Contents.setAvgAge(avgAge);
+        BigDecimal avgKm = sumKm.divide(size, BigDecimal.ROUND_UP);
+        Contents.setAvgMileage(avgKm);
+        BigDecimal avgPrice = sumPrice.divide(size, BigDecimal.ROUND_UP);
+        Contents.setAvgSalesPrice(avgPrice);
+        Contents.setAvgPurchasePrice(avgPrice.multiply(new BigDecimal(0.93)));
 
         return new ResponseEntity<>(Contents, HttpStatus.OK);
     }
