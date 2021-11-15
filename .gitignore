@@ -1,0 +1,6 @@
+/.idea/
+/.jpb/
+/frontend/build/
+/frontend/node_modules/
+/target/
+/backupwithecode.sql
