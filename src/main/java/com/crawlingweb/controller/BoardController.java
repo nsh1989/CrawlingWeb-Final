@@ -87,6 +87,44 @@ public class BoardController {
         Collections.sort(Contents);
         return new ResponseEntity<>(Contents, HttpStatus.OK);
     }
+    @GetMapping("/getAvgPrice")
+    @CrossOrigin(origins="*", allowedHeaders = "*")
+    public ResponseEntity getAvgPrice(
+        @RequestParam(value="ecode", required = false) String ecode,
+        @RequestParam(value="km", required = false, defaultValue = "0") BigDecimal km,
+        @RequestParam(value="age", required = false, defaultValue = "0") int age){
+        int ageParam = 12;
+        BigDecimal kmParam = new BigDecimal(10000);
+        Specification<Encarlist> spec = Specification.where(EncarlistSpecification.all(null));
+        if(age != 0 && ageParam != 0){
+            spec = spec.and(EncarlistSpecification.betweenAge(age-ageParam, age+ageParam));
+        }
+        if(!km.equals(new BigDecimal(0)) && !kmParam.equals(new BigDecimal(0))){
+            BigDecimal StartKm = km.subtract(kmParam);
+            BigDecimal EndKm = km.add(kmParam);
+            spec = spec.and(EncarlistSpecification.betweenMileage(StartKm, EndKm));
+        }
+        if(ecode != null){
+            spec = spec.and(EncarlistSpecification.equalEcode(ecode));
+        }
+
+        List<Encarlist> encarlists = encarlistRepository.findAll(spec);
+
+        ResultReturn Contents =  new ResultReturn();
+        BigDecimal sumPrice = new BigDecimal(0);
+
+        for(Encarlist entry: encarlists){
+            sumPrice = sumPrice.add(entry.getPrice());
+        }
+        BigDecimal size = new BigDecimal(encarlists.size());
+
+        if(!size.equals(new BigDecimal(0))){
+            BigDecimal avgPrice = sumPrice.divide(size, BigDecimal.ROUND_UP);
+            Contents.setAvgSalesPrice(avgPrice);
+            Contents.setAvgPurchasePrice(avgPrice.multiply(new BigDecimal(0.93)));
+        }
+        return new ResponseEntity<>(Contents, HttpStatus.OK);
+    }
 
     @GetMapping("/getByFilters")
     @CrossOrigin(origins="*", allowedHeaders = "*")
@@ -160,16 +198,18 @@ public class BoardController {
             sumAge = sumAge.add(new BigDecimal(entry.getAge()));
             sumKm = sumKm.add(entry.getPrice());
         }
-
         BigDecimal size = new BigDecimal(encarlists.size());
-        System.out.println(size);
-        BigDecimal avgAge = sumAge.divide(size, BigDecimal.ROUND_UP);
-        Contents.setAvgAge(avgAge);
-        BigDecimal avgKm = sumKm.divide(size, BigDecimal.ROUND_UP);
-        Contents.setAvgMileage(avgKm);
-        BigDecimal avgPrice = sumPrice.divide(size, BigDecimal.ROUND_UP);
-        Contents.setAvgSalesPrice(avgPrice);
-        Contents.setAvgPurchasePrice(avgPrice.multiply(new BigDecimal(0.93)));
+        if(!size.equals(new BigDecimal(0))){
+            System.out.println(encarlists);
+            System.out.println(size);
+            BigDecimal avgAge = sumAge.divide(size, BigDecimal.ROUND_UP);
+            Contents.setAvgAge(avgAge);
+            BigDecimal avgKm = sumKm.divide(size, BigDecimal.ROUND_UP);
+            Contents.setAvgMileage(avgKm);
+            BigDecimal avgPrice = sumPrice.divide(size, BigDecimal.ROUND_UP);
+            Contents.setAvgSalesPrice(avgPrice);
+            Contents.setAvgPurchasePrice(avgPrice.multiply(new BigDecimal(0.93)));
+        }
 
         return new ResponseEntity<>(Contents, HttpStatus.OK);
     }
