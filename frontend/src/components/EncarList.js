@@ -19,28 +19,28 @@ class EncarList extends Component{
         }
         // this.remove = this.remove.bind(this);
         console.log("constructor : ", this.props.kmParam)
-        if(this.state.loadingState === false){
-            this.getURLPayload();
-            service.getByFilters(this.props.selectedBrand,
-                this.props.selectedModel,
-                this.props.selectedSubModel,
-                this.props.selectedDetailModel,
-                this.props.selectedYear,
-                this.props.age,
-                this.props.km,
-                this.props.kmParam,
-                this.props.ageParam,
-                this.props.pageIndex,
-                this.props.ecode
-
-            ).then( (res) =>{
-                console.log(res)
-                this.setState({loadingState: true});
-                this.setAPIreturn(res.data);
-            }).then(()=>{
-                this.setState({loadingState: false});
-            });
-        }
+        this.getURLPayload();
+        // if(this.state.loadingState === false){
+        //     this.setState({loadingState: true});
+        //     this.getURLPayload();
+        //     service.getByFilters(this.props.selectedBrand,
+        //         this.props.selectedModel,
+        //         this.props.selectedSubModel,
+        //         this.props.selectedDetailModel,
+        //         this.props.selectedYear,
+        //         this.props.age,
+        //         this.props.km,
+        //         this.props.kmParam,
+        //         this.props.ageParam,
+        //         this.props.pageIndex,
+        //         this.props.ecode
+        //     ).then( (res) =>{
+        //         console.log(res)
+        //         this.setAPIreturn(res.data);
+        //     }).then(()=>{
+        //         this.setState({loadingState: false});
+        //     });
+        // }
     };
     getURLPayload() {
         const current = decodeURI(window.location.href);

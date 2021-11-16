@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BOARD_API_BASE_URL = "http://localhost:8080/api"
+// const BOARD_API_BASE_URL = "http://localhost:8080/api"
+const BOARD_API_BASE_URL = "/api"
 
 class service {
     getBoards() {
